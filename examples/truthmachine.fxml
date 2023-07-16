@@ -1,0 +1,23 @@
+<ROOT>
+  <PROGRAM name="main">
+    <CALL>
+      <SET name="name">
+        <ARG index="2"></ARG>
+      </SET>
+    </CALL>
+  </PROGRAM>
+  <PROGRAM name="0">
+    <PRINTLN>
+      <ARG index="2"></ARG>
+    </PRINTLN>
+    <QUIT>
+    </QUIT>
+  </PROGRAM>
+  <PROGRAM name="1">
+    <PRINTLN>
+      <ARG index="2"></ARG>
+    </PRINTLN>
+    <CALL name="1">
+    </CALL>
+  </PROGRAM>
+</ROOT>
