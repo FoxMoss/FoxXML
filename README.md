@@ -15,4 +15,5 @@ Hi its really late and right before the deadline so sorry if this doesnt make se
 | SET     	| set a variable in the current scope.<br>uses name attribute.<br>uses value attribute.<br>uses type attribute.<br>prioritizes value from children.<br>can be used by parent. 	|
 | VAR     	| parent can see a variables value.<br>uses name attribute.                                                                                                                   	|
 | PRINTLN 	| prints child value and a new line                                                                                                                                           	|
-| ADDINT  	| only int operation.                                                                                                                                                         	|
+| ADDINT  	| only int operation.<br>uses val1 attribute.<br>uses val2 attribute.<br>adds the ints.                                                                                       	|
+
