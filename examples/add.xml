@@ -1,0 +1,9 @@
+<ROOT>
+  <PROGRAM name="main">
+    <SET name="a" type="int" value="1"></SET>
+    <SET name="b" type="int" value="9"></SET>
+    <PRINTLN>
+      <ADDINT val1="a" val2="b"></ADDINT>
+    </PRINTLN>
+  </PROGRAM>
+</ROOT>

@@ -11,6 +11,20 @@ void endElement(void *userData, const XML_Char *name);
 void elementData(void *data, const char *content, int length);
 void run(int argc, char *argv[]);
 
+enum Type { stringType, intType, floatType };
+Type stringToType(std::string type);
+class Variable {
+public:
+  Type type;
+  Variable(Type type, std::string value);
+  Variable();
+  ~Variable();
+  std::string GetString();
+  std::string valueString;
+  int valueInt;
+  float valueFloat;
+};
+
 class ProgramState {
 public:
   ProgramState(std::map<std::string, std::string> atts);
@@ -18,7 +32,7 @@ public:
 
   bool LOGGING;
 
-  std::map<std::string, std::string> vars;
+  std::map<std::string, Variable> vars;
 };
 
 struct Token {

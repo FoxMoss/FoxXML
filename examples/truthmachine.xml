@@ -1,4 +1,10 @@
 <ROOT>
+  <style>
+    PROGRAM {
+    background-color: black;
+    color: green;
+    }
+  </style>
   <PROGRAM name="main">
     <CALL>
       <SET name="name">

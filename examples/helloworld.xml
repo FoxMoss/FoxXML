@@ -1,0 +1,14 @@
+<ROOT>
+  <style>
+    PROGRAM {
+    background-color: black;
+    color: green;
+    }
+  </style>
+  <PROGRAM name="main">
+    <PRINTLN>
+      <SET name="tmp" value="Hello World" type="string">
+      </SET>
+    </PRINTLN>
+  </PROGRAM>
+</ROOT>

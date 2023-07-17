@@ -16,7 +16,7 @@ static std::string value;
 std::string tagName;
 std::map<std::string, std::string> properties;
 std::stack<ProgramState *> programStack;
-std::map<int, std::string> depthMap;
+std::map<int, Variable> depthMap;
 std::vector<Token> tokens;
 std::stack<int> tokenCache;
 std::map<std::string, int> programMap;
@@ -36,11 +36,16 @@ void run(int argc, char *argv[]) {
         programStack.push(new ProgramState(token.properties));
       }
       if (token.tagName == std::string("CALL")) {
-        programStack.top()->vars["name"] = token.properties["name"];
+        programStack.top()->vars["name"] =
+            Variable(stringType, token.properties["name"]);
       }
     } else {
       if (token.tagName == "CALL") { // Switch is broken in cpp i am sorry.
-        std::string callName = programStack.top()->vars["name"];
+        if (programStack.top()->vars["name"].type != stringType) {
+          printf("ERROR: Variable 'name' is not string.\n");
+          exit(1);
+        }
+        std::string callName = programStack.top()->vars["name"].valueString;
 
         if (programMap.count(callName) == 0) {
           printf("ERROR: Call name \"%s\" not found\n", callName.c_str());
@@ -55,19 +60,22 @@ void run(int argc, char *argv[]) {
       } else if (token.tagName == "ARG") {
         int index = std::stoi(token.properties["index"]);
         if (index >= argc) {
-          printf("ERROR: Index %i is greater that argc %i", index, argc);
+          printf("ERROR: Index %i is greater that argc %i \n", index, argc);
           exit(1);
         }
-        depthMap[token.depth] = std::string(argv[index]);
+        depthMap[token.depth] = Variable(stringType, std::string(argv[index]));
 
         if (programStack.top()->LOGGING) {
           printf("LOG: Depth map `%i` was set with value `%s`\n", token.depth,
-                 depthMap[token.depth].c_str());
+                 depthMap[token.depth].valueString.c_str());
         }
 
       } else if (token.tagName == "SET") {
         std::string varName;
-        std::string varValue = token.properties["value"];
+        Type varType;
+
+        Variable varValue = Variable(stringToType(token.properties["type"]),
+                                     token.properties["value"]);
 
         if (depthMap.count(token.depth + 1) == 1) {
           varValue = depthMap[token.depth + 1];
@@ -85,14 +93,14 @@ void run(int argc, char *argv[]) {
         programStack.top()->vars[varName] = varValue;
         if (programStack.top()->LOGGING) {
           printf("LOG: Var `%s` was set with value `%s`\n", varName.c_str(),
-                 varValue.c_str());
+                 varValue.GetString().c_str());
         }
 
         depthMap[token.depth] = varValue;
 
         if (programStack.top()->LOGGING) {
           printf("LOG: Depth map `%i` was set with value `%s`\n", token.depth,
-                 varValue.c_str());
+                 varValue.GetString().c_str());
         }
       } else if (token.tagName == "PROGRAM") {
         programStack.pop();
@@ -112,17 +120,81 @@ void run(int argc, char *argv[]) {
         std::string printValue = "";
 
         if (depthMap.count(token.depth + 1) == 1) {
-          printValue = depthMap[token.depth + 1];
+          printValue = depthMap[token.depth + 1].GetString();
         } else if (programStack.top()->LOGGING) {
           printf("LOG: Nothing to print\n");
         }
 
         printf("%s\n", printValue.c_str());
+      } else if (token.tagName == "ADDINT") {
+
+        if (token.properties.find("val1") == token.properties.end() ||
+            token.properties.find("val2") == token.properties.end() ||
+            programStack.top()->vars.count(token.properties["val1"]) == 0 ||
+            programStack.top()->vars.count(token.properties["val2"]) == 0) {
+          printf("ERROR: Vals in ADDINT are undef\n");
+          exit(1);
+        }
+        Variable val1 = programStack.top()->vars[token.properties["val1"]];
+        Variable val2 = programStack.top()->vars[token.properties["val2"]];
+        if (val1.type != intType || val2.type != intType) {
+          printf("ERROR: Vals are not both ints in ADDINT\n");
+          exit(1);
+        }
+        depthMap[token.depth] =
+            Variable(intType, std::to_string(val1.valueInt + val2.valueInt));
       }
       depthMap.erase(token.depth + 1);
     }
   }
 }
+Type stringToType(std::string type) {
+  if (type == "string") {
+
+    return stringType;
+  }
+  if (type == "int") {
+    return intType;
+  }
+  if (type == "float") {
+    return floatType;
+  }
+  return stringType;
+}
+Variable::Variable(Type cType, std::string value) {
+  switch (cType) {
+  case stringType:
+    valueString = value;
+    break;
+  case intType:
+    valueInt = std::stoi(value);
+    break;
+  case floatType:
+    valueFloat = std::stof(value);
+    break;
+  }
+  type = cType;
+}
+Variable::~Variable() {}
+Variable::Variable() {
+  type = stringType;
+  valueString = "";
+}
+std::string Variable::GetString() {
+  switch (type) {
+  case stringType:
+    return valueString;
+    break;
+  case intType:
+    return std::to_string(valueInt);
+    break;
+  case floatType:
+    return std::to_string(valueFloat);
+    break;
+  }
+  return "bad type";
+}
+
 std::map<std::string, std::string> makeMap(char **atts) {
   std::map<std::string, std::string> ret;
   for (int i = 0; atts[i]; i += 2) {
