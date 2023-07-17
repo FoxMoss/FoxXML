@@ -17,3 +17,15 @@ Hi its really late and right before the deadline so sorry if this doesnt make se
 | PRINTLN 	| prints child value and a new line                                                                                                                                           	|
 | ADDINT  	| only int operation.<br>uses val1 attribute.<br>uses val2 attribute.<br>adds the ints.                                                                                       	|
 
+## Styling
+
+Its reccomended that you add CSS.
+
+```xml
+<style>
+    PROGRAM {
+        background-color: black;
+        color: green;
+    }
+</style>
+```

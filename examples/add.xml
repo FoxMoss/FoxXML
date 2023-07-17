@@ -1,4 +1,10 @@
 <ROOT>
+  <style>
+    PROGRAM {
+    background-color: black;
+    color: green;
+    }
+  </style>
   <PROGRAM name="main">
     <SET name="a" type="int" value="1"></SET>
     <SET name="b" type="int" value="9"></SET>
